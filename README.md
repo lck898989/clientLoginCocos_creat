@@ -1,1 +1,2 @@
-# clientLoginCocos_creat
+# hello-world
+Hello world new project template.
