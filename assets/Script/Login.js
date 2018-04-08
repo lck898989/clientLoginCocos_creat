@@ -3,7 +3,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-06 21:08:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-08 12:54:07
+ * @Last Modified time: 2018-04-08 17:25:26
  */
 const Server = require('Server');
 const Network = require('Network');
@@ -49,9 +49,13 @@ cc.Class({
                     var response = xhr.responseText;
                     console.log("response is " + response);
                     //将json字符串转换为json对象
-                    // var message = JSON.parse(response);
-                    // console.log("message is " + message);
-                    // console.log("message is " + message.msg);
+                    try{
+                        var message = JSON.parse(response);
+                        console.log("message is " + message);
+                        console.log("message is " + message.msg);
+                    }catch(e){
+                        console.log("转换为json对象出错");
+                    }
                     //将显示框的状态设置为激活状态然后显示服务端给发送的信息
                     self.toastParent.active = true;
                     //获得显示框的label然后设置它的字体等等一些属性
@@ -71,7 +75,7 @@ cc.Class({
             };
             cc.log("username is " + self.username);
             cc.log("password is " + self.password);
-            xhr.open(Server.type, Server.url + '?username=' + self.username + '&password=' + self.password, true);
+            xhr.open(Server.type, Server.url + '/login?username=' + self.username + '&password=' + self.password, true);
             
             // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             // JSON.stringify()

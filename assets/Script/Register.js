@@ -40,14 +40,23 @@ cc.Class({
                     var response = xhr.responseText;
                     console.log("response is " + response);
                     //将json字符串转换为json对象
-                    var message = JSON.parse(response);
-                    console.log("message is " + message);
-                    console.log("message is " + message.msg);
+                    try{
+                        var message = JSON.parse(response);
+                        console.log("message is " + message);
+                        console.log("message is " + message.msg);
+                    }catch(e){
+                        console.log("转换为json对象失败");
+                    }
+                    
                     //将显示框的状态设置为激活状态然后显示服务端给发送的信息
                     self.toastParent.active = true;
                     //设置标签的值为后端传递进来的值
-                    var label = self.toastParent.getComponent(cc.Label);
-                    label.string = message.msg;
+                    var label = self.toastParent.children[0].getComponent(cc.Label);
+                    if(message != null){
+                        label.string = message.msg;
+                    }else{
+                        label.string = response;
+                    }
                     label.fontSize = 30;
                     label.scheduleOnce(function(){
                         //两秒钟后隐藏该显示框
@@ -61,7 +70,8 @@ cc.Class({
             cc.log("password is " + self.password);
             
             cc.log("server's type is " + Server.type);
-            xhr.open(Server.type, Server.url + '?username=' + self.username + '&password=' + self.password, true);
+            xhr.open(Server.type, Server.url+'/register' + '?username=' + self.username + '&password=' + self.password, true);
+            cc.log("url is " + Server.url+'/register' + '?username=' + self.username + '&password=' + self.password);
             //发送请求到服务器
             xhr.send();
         });
