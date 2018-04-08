@@ -3,8 +3,9 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-06 21:08:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-08 09:57:00
+ * @Last Modified time: 2018-04-08 10:11:20
  */
+const Server = require('Server');
 const Network = require('Network');
 cc.Class({
     extends: cc.Component,
@@ -23,6 +24,7 @@ cc.Class({
     onLoad () {
         cc.log("in login.js this.node is " + this.node);
         cc.log("in login.js socket is " + this.socket);
+        cc.log("server is " + Server.url);
         var self =this;
         //如果点击登录按钮的话进行登录
         this.node.on('mousedown',function(){

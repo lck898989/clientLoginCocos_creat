@@ -1,13 +1,5 @@
-// Learn cc.Class:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/class/index.html
-// Learn Attribute:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/reference/attributes/index.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
-
+//注册功能方法
+const Server = require('Server');
 cc.Class({
     extends: cc.Component,
 
@@ -22,11 +14,28 @@ cc.Class({
         }
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
     onLoad () {
+        var self = this;
+        cc.log('Server is ' + Server.url);
+        //当点击按钮的时候开始注册用户，获取用户名和密码
         this.node.on('mousedown',function(){
-            
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+                    //服务器相应的条件是响应状态为200开始读取响应内容
+                    var response = xhr.responseText;
+                    console.log("response is " + response);
+                    //将json字符串转换为json对象
+                    var message = JSON.parse(response);
+                    console.log("message is " + message);
+                    console.log("message is " + message.msg);
+                }
+            };
+            cc.log("username is " + self.username);
+            cc.log("password is " + self.password);
+            xhr.open("POST", Server.url + '?username=' + self.username + '&password=' + self.password, true);
+            //发送请求到服务器
+            xhr.send();
         });
     },
     init:function(){
