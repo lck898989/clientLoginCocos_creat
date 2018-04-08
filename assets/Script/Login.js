@@ -3,7 +3,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-06 21:08:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-07 13:59:28
+ * @Last Modified time: 2018-04-08 09:57:00
  */
 const Network = require('Network');
 cc.Class({
@@ -40,7 +40,7 @@ cc.Class({
             };
             cc.log("username is " + self.username);
             cc.log("password is " + self.password);
-            xhr.open("GET", 'http://localhost:8888?username='+self.username + '&password=' + self.password, true);
+            xhr.open("GET", 'http://localhost:8888?username=' + self.username + '&password=' + self.password, true);
             
             // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             // JSON.stringify()
