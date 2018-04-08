@@ -2,11 +2,11 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-08 10:08:00 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-08 10:14:33
+ * @Last Modified time: 2018-04-08 11:38:38
  */
 //服务器的相关参数
 module.exports = {
-    url  : 'http://localhost:8080',
+    url  : 'http://192.168.1.111:3000',
     type : '' || 'get',
     port : '',
 }

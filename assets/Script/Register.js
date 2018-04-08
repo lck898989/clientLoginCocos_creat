@@ -11,14 +11,28 @@ cc.Class({
         passwordInput : {
             default : null,
             type    : cc.EditBox,
+        },
+        //提示消息显示框
+        toastParent   : {
+            default  : null,
+            type     : cc.Node,
         }
+
     },
 
     onLoad () {
         var self = this;
-        cc.log('Server is ' + Server.url);
+        Server.type = 'POST';
+        self.toastParent.active = false;
         //当点击按钮的时候开始注册用户，获取用户名和密码
+        this.sendRequest();
+    },
+    sendRequest : function(){
+        var self = this;
+        self.username = self.usernameInput.string;
+        self.password = self.passwordInput.string;
         this.node.on('mousedown',function(){
+            //创建一个http请求
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
@@ -29,11 +43,25 @@ cc.Class({
                     var message = JSON.parse(response);
                     console.log("message is " + message);
                     console.log("message is " + message.msg);
+                    //将显示框的状态设置为激活状态然后显示服务端给发送的信息
+                    self.toastParent.active = true;
+                    //设置标签的值为后端传递进来的值
+                    var label = self.toastParent.getComponent(cc.Label);
+                    label.string = message.msg;
+                    label.fontSize = 30;
+                    label.scheduleOnce(function(){
+                        //两秒钟后隐藏该显示框
+                        self.toastParent.active = false;
+                    },2);
+                    //关闭所有的计时器
+                    self.toastParent.getComponent(cc.Label).unscheduleAllAaCallbacks();
                 }
             };
             cc.log("username is " + self.username);
             cc.log("password is " + self.password);
-            xhr.open("POST", Server.url + '?username=' + self.username + '&password=' + self.password, true);
+            
+            cc.log("server's type is " + Server.type);
+            xhr.open(Server.type, Server.url + '?username=' + self.username + '&password=' + self.password, true);
             //发送请求到服务器
             xhr.send();
         });
@@ -45,5 +73,8 @@ cc.Class({
 
     },
 
-    // update (dt) {},
+    update (dt) {
+        this.username = this.usernameInput.string;
+        this.password = this.passwordInput.string;
+    },
 });
