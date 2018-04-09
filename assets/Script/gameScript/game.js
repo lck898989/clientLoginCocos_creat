@@ -1,15 +1,13 @@
-// Learn cc.Class:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/class/index.html
-// Learn Attribute:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/reference/attributes/index.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2018-04-09 09:19:52 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-04-09 09:34:04
+ */
+
 const begin = require("begin");
 const gameButton = require("gameButton");
-const randList = require("rankList");
+const rankList = require("rankList");
 const back = require("back");
 cc.Class({
     extends: cc.Component,
@@ -39,8 +37,12 @@ cc.Class({
         startCom.init();
         var gameButtonCom = gameButton.prototype;
         gameButtonCom.init();
-        var randCom = randList.prototype;
-        randCom.init();
+        var rankCom = rankList.prototype;
+        rankCom.init();
+        cc.log("rankcom is " + rankCom);
+        //获取组件对应的节点
+        var rank = this.node.getChildByName('rank');
+        rank.active = false;
         var backCom = back.prototype;
         backCom.init();
     },

@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-08 16:51:27 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-08 17:22:01
+ * @Last Modified time: 2018-04-09 10:06:00
  */
 
 var begin = require('begin');
@@ -52,6 +52,7 @@ cc.Class({
                 }
                 //取消计时器
                 this.endjishiqi();
+                this.isOpen = false;
                 // this.scoreText.getComponent(cc.Label).string = " " + this.score + "十秒时间到" 
             }
     },

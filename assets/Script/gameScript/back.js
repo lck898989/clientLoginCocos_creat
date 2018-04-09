@@ -31,19 +31,15 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
 
-    onLoad () {
-        
-    },
-    init(){
-        cc.log("init randList");
-    },
-    randListEvent : function(){
-        var rank = this.node.parent.getChildByName("rank");
-        rank.active = true;
+    onLoad () {},
+    init  : function(){
+        cc.log("init back");
     },
     start () {
 
     },
-
+    backEvent : function(){
+        cc.director.loadScene("begin");
+    },
     // update (dt) {},
 });
