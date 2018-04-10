@@ -7,7 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
-
+const server = require("Server");
 cc.Class({
     extends: cc.Component,
 
@@ -32,7 +32,7 @@ cc.Class({
 
     onLoad () {
         this.operation = '';
-        this.ServerLink = "http://192.168.1.175:3000/";
+        this.ServerLink = server.host;
         this.toastParent.active = false;
         cc.log("node is " +this.node.name);
     },
@@ -56,7 +56,6 @@ cc.Class({
                     //服务器相应的条件是响应状态为200开始读取响应内容
                     var response = xhr.responseText;
                     console.log("response is " + response);
-                    
                     try{
                         //将json字符串转换为json对象
                         var message = JSON.parse(response);
@@ -73,44 +72,55 @@ cc.Class({
                         label.fontSize = 30;
                         //显示框中显示从服务器传来的数据
                         label.string = response;
+                        //存储用户信息
                         self.overAndStoreUser(label,response);
                     }
                
-                    //关闭所有的计时器
-                    label.unscheduleAllAaCallbacks();
+                    
                 }
             };    
             cc.log("username is " + self.username);
             cc.log("password is " + self.password);
             cc.log("serverLink is " + this.ServerLink);
-            xhr.open("POST", this.ServerLink + '?username=' + self.username + '&password=' + self.password);
+            xhr.open("POST", this.ServerLink);
             // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             // JSON.stringify()
-            xhr.send();
+            // + '?username=' + self.username + '&password=' + self.password
+            //JSON.stringify({'username':'adsf','password':'asd'})
+            cc.log('{"username":' + '"' + self.username + '",' + '"password"' + ":" + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
+            xhr.send('{"username":' + '"' + self.username + '",' + '"password"' + ":" + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
+            // xhr.send();
     },
     overAndStoreUser : function(label,message){
         var self = this;
         if(message instanceof String){
-            label.string = message;
+            //message是一个字符串对象
+           this.showEditBox(message,label);
         }else{
-            if(message.msg === '信息正确'){
-                this.scheduleOnce(function(){
-                    //把相应的用户信息保存起来，初始化全局变量
-                    UserInfo.user.username = self.username;
-                    UserInfo.user.password = self.password;
-                    //登录成功后2s自动进入游戏
-                    cc.director.loadScene("game");
-                },2);
-            }else if(message.msg === '注册成功'){
-                label.string = message.msg
-            }
+            //message是一个JSON对象
+          this.showEditBox(message.msg,label);
         }
         
         
        
     },
+    showEditBox : function(message,label){
+        //该message就是一个字符串类型的数据
+        if(message === '信息正确'){
+            this.scheduleOnce(function(){
+                //把相应的用户信息保存起来，初始化全局变量
+                UserInfo.user.username = self.username;
+                UserInfo.user.password = self.password;
+                //登录成功后2s自动进入游戏
+                cc.director.loadScene("game");
+            },3);
+            
+        }
+        label.string = message;
+
+    },
     loginEvent : function(){
-        this.eventCheck(this.loginEvent.name)
+        this.eventCheck(this.loginEvent.name);
     },
     registerEvent : function(){
        this.eventCheck(this.registerEvent.name);
@@ -124,18 +134,21 @@ cc.Class({
                this.operation = 'login';
                break;
             case 'registerEvent':
-                this.operation = 'register';
+                this.operation = 'regist';
                 cc.log("asdfa");
                 break;
             case 'enterEvent':
                 this.operation = 'enter';
-                break;       
+                break;     
         }
         this.sendRequest(this.operation);
-        this.ServerLink = "http://192.168.1.175:3000/";
+        this.ServerLink = server.host;
     },
     update(){
         this.username = this.usernameInput.string;
         this.password = this.passwordInput.string;
+    },
+    onDestroy(){
+        this.unscheduleAllCallbacks();
     }
 });

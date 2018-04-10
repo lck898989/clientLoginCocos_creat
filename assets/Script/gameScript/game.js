@@ -2,13 +2,14 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-09 09:19:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-09 09:34:04
+ * @Last Modified time: 2018-04-10 10:34:12
  */
 
 const begin = require("begin");
 const gameButton = require("gameButton");
 const rankList = require("rankList");
 const back = require("back");
+const longLink = require("LongLink");
 cc.Class({
     extends: cc.Component,
 
@@ -33,6 +34,10 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        //获得长连接对象
+        cc.log("长连接longLink is " + longLink);
+        this.socket = longLink.prototype.socket;
+        longLink.init();
         var startCom = begin.prototype;
         startCom.init();
         var gameButtonCom = gameButton.prototype;
@@ -51,5 +56,7 @@ cc.Class({
 
     },
 
-    update (dt) {},
+    update (dt) {
+        
+    },
 });
