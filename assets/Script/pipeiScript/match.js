@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 17:52:02
+ * @Last Modified time: 2018-04-11 17:58:20
  */
 cc.Class({
     extends: cc.Component,
@@ -141,11 +141,11 @@ cc.Class({
                 //进入房间
                 cc.director.loadScene('matchedRoom');
             }  
-            self.socket.on('join',function(msg){
-                console.log("in join event msg is " + msg);
-                var message = JSON.parse(msg);
-                console.log(message.username);
-            });
+            // self.socket.on('join',function(msg){
+            //     console.log("in join event msg is " + msg);
+            //     var message = JSON.parse(msg);
+            //     console.log(message.username);
+            // });
         });
     },
 });
