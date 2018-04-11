@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-08 16:51:27 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-10 17:14:54
+ * @Last Modified time: 2018-04-11 11:18:48
  */
 
 var begin = require('begin');
@@ -21,7 +21,6 @@ cc.Class({
         this.time = 0;
         //获得长连接的脚本对象的socket
         // this.socket = game.prototype.socket;
-        cc.log("in gameButton's socket is " + this.socket);
         // this.socket.on('conn',function(msg){
         //     //进入回调函数说明是连接成功的状态
         //     console.log("msg is " + msg);
@@ -29,7 +28,8 @@ cc.Class({
         // });
         this.init();
         var longLinkCom = link.prototype;
-        this.socket = longLinkCom.longLink;
+        this.socket = UserInfo.socket;
+        cc.log("in gameButton socket is " + this.socket);
     },
     init(){
         this.begin = begin.prototype;
@@ -51,13 +51,13 @@ cc.Class({
                 cc.log("score is " + UserInfo.score);
                 
                 if(time === 9){
+                    alert("十秒时间到");
                     var dataString = '{"username":' + '"' + UserInfo.username + '",' +'"score":' +'"' + UserInfo.score + '",' + '"tag":' + '"score"' + '}';
                     console.log(dataString);
                     this.socket.emit('sendData',dataString);
                 }
                 
             }else{
-                alert("十秒时间到");
                 // this.bestScore = this.score;
                 //将最好成绩存储起来
                 //将当前分数发给服务器

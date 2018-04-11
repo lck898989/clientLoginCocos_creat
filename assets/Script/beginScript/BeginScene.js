@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-10 16:32:55
+ * @Last Modified time: 2018-04-11 10:42:59
  */
 const serverHost = require("Host");
 cc.Class({
@@ -106,13 +106,15 @@ cc.Class({
                 //把相应的用户信息保存起来，初始化全局变量
                 
                 //登录成功后2s自动进入游戏
-                cc.director.loadScene("game");
+                cc.director.loadScene("ptype");
             },1);
             // this.unscheduleAllCallbacks();
             UserInfo.username = self.username;
             UserInfo.password = self.password;
             cc.log("userInfo's username is " + UserInfo.username);
             cc.log("userInfo's password is " + UserInfo.password);
+            // //开启长连接
+            // UserInfo.socket();
         }
         label.string = message;
 

@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-09 09:19:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-10 17:08:17
+ * @Last Modified time: 2018-04-11 11:35:50
  */
 
 const begin = require("begin");
@@ -43,7 +43,8 @@ cc.Class({
         
         cc.log("lognlink is " + link.prototype);
         this.Link = link.prototype;
-        this.socket = this.Link.longLink;
+        cc.log("link is " + this.Link);
+        this.socket = UserInfo.socket;
         cc.log("in game socket is " + this.socket);
         // cc.log(this.link.longLink);
         this.Link.init();

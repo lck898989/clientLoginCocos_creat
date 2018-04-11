@@ -1,8 +1,8 @@
 /*
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 08:52:22 
- * @Last Modified by:   mikey.zhaopeng 
- * @Last Modified time: 2018-04-11 08:52:22 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-04-11 11:19:13
  */
 const mainButton = require('gameButton');
 const link = require('link');
@@ -35,7 +35,7 @@ cc.Class({
 
     onLoad () {
         var longLinkCom = link.prototype;
-        this.socket = longLinkCom.longLink;
+        this.socket = UserInfo.socket;
         cc.log("长连接socket is " + this.socket);
         cc.log("score is " + this.score);
         cc.log("in rankList Global's username is " + UserInfo.username);
