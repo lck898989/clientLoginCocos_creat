@@ -1,13 +1,11 @@
-// Learn cc.Class:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/class/index.html
-// Learn Attribute:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/reference/attributes/index.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
-
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2018-04-11 08:52:22 
+ * @Last Modified by:   mikey.zhaopeng 
+ * @Last Modified time: 2018-04-11 08:52:22 
+ */
+const mainButton = require('gameButton');
+const link = require('link');
 cc.Class({
     extends: cc.Component,
 
@@ -27,29 +25,65 @@ cc.Class({
         //         this._bar = value;
         //     }
         // },
+        rankBang : {
+            default : null,
+            type    : cc.Node,
+        }
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
+        var longLinkCom = link.prototype;
+        this.socket = longLinkCom.longLink;
+        cc.log("长连接socket is " + this.socket);
+        cc.log("score is " + this.score);
+        cc.log("in rankList Global's username is " + UserInfo.username);
     },
     init(){
         cc.log("init randList");
         this.count = 0;
     },
+    //排名
     randListEvent : function(){
-        this.count += 1;
-        var rank = this.node.parent.getChildByName("rank");
-        if((this.count % 2) ===0){
-            rank.active = false;
-        }else{
-            rank.active = true;
+            cc.log("this.score is " + UserInfo.score);
+            cc.log("username is " + UserInfo.username);
+            var dataString = '{"username":' + '"' + UserInfo.username + '",' +'"score":' +'"' + UserInfo.score + '",' + '"tag":' + '"rank"' + '}';
+            console.log(dataString);
+            this.socket.emit('sendData',dataString);
+            var self = this;
+            this.socket.on('sendData',function(msg){
+                console.log("msg is " + msg);
+                self.RandMsg = msg;
+                var msg = JSON.parse(msg);
+                cc.log("type is " + typeof msg);
+                var length = msg.length;
+                cc.log("数组的长度为：" +length);
+                self.showRankList(msg,self);
+            });
+            this.rankBang.active = true;
+    },
+    //显示排名
+    showRankList : function(msg,who){
+        cc.log("in showRankList msg is " + msg);
+        if(msg instanceof Array){
+            //取得数组的长度
+            var length = msg.length;
+            cc.log("数组的长度为：" +length);
+            for(let i = 0;i < length;i++){
+                //填写有户名
+                who.rankBang.getChildByName('username'+i).getComponent(cc.Label).string = msg[i].username;
+                //填写分数
+                who.rankBang.getChildByName('score'+i).getComponent(cc.Label).string = msg[i].score;
+            }
         }
+
     },
     start () {
 
     },
 
-    // update (dt) {},
+    update (dt) {
+        
+    },
 });

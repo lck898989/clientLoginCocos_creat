@@ -1,6 +1,5 @@
 window.UserInfo={
-    user : {
-        username : '',
-        password : '',
-    },
+    username : null,
+    password : null,
+    score : 0,
 }

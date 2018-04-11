@@ -2,14 +2,14 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-09 09:19:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-10 10:34:12
+ * @Last Modified time: 2018-04-10 17:08:17
  */
 
 const begin = require("begin");
 const gameButton = require("gameButton");
 const rankList = require("rankList");
 const back = require("back");
-const longLink = require("LongLink");
+const link = require("link");
 cc.Class({
     extends: cc.Component,
 
@@ -35,9 +35,18 @@ cc.Class({
 
     onLoad () {
         //获得长连接对象
-        cc.log("长连接longLink is " + longLink);
-        this.socket = longLink.prototype.socket;
-        longLink.init();
+        // cc.log("长连接longLink is " + longLink);
+        // this.socketPrototype = longLink.prototype;
+        // this.socketPrototype.init();
+        // cc.log("socket is " + this.socketPrototype);
+        // cc.log(this.socketPrototype.link);
+        
+        cc.log("lognlink is " + link.prototype);
+        this.Link = link.prototype;
+        this.socket = this.Link.longLink;
+        cc.log("in game socket is " + this.socket);
+        // cc.log(this.link.longLink);
+        this.Link.init();
         var startCom = begin.prototype;
         startCom.init();
         var gameButtonCom = gameButton.prototype;
@@ -57,6 +66,8 @@ cc.Class({
     },
 
     update (dt) {
-        
+    //    this.socket.on('sendData',function(msg){
+    //        console.log("msg is " + msg);
+    //    })  
     },
 });

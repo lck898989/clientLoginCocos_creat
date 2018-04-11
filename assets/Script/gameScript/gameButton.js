@@ -2,12 +2,12 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-08 16:51:27 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-10 11:07:39
+ * @Last Modified time: 2018-04-10 17:14:54
  */
 
 var begin = require('begin');
 var Global = require('Global');
-const longLink = require('LongLink');
+const link = require('link');
 cc.Class({
     extends: cc.Component,
 
@@ -20,13 +20,19 @@ cc.Class({
     onLoad () {
         this.time = 0;
         //获得长连接的脚本对象的socket
-        this.socket = longLink.prototype.socket;
+        // this.socket = game.prototype.socket;
         cc.log("in gameButton's socket is " + this.socket);
+        // this.socket.on('conn',function(msg){
+        //     //进入回调函数说明是连接成功的状态
+        //     console.log("msg is " + msg);
+        //     concosle.log("连接成功");
+        // });
+        this.init();
+        var longLinkCom = link.prototype;
+        this.socket = longLinkCom.longLink;
     },
     init(){
         this.begin = begin.prototype;
-        //得分
-        this.score = 0;
         //最好成绩
         this.bestScore = 0;
         cc.log("init gameButtons");
@@ -39,24 +45,34 @@ cc.Class({
                 if(!this.isOpen){
                     this.beginTimer();
                 }
-                this.score += 1;
+                UserInfo.score += 1;
                 this.scoreText = this.node.parent.getChildByName('bestScore');
-                this.scoreText.getComponent(cc.Label).string = this.score;
+                this.scoreText.getComponent(cc.Label).string = UserInfo.score;
+                cc.log("score is " + UserInfo.score);
+                
+                if(time === 9){
+                    var dataString = '{"username":' + '"' + UserInfo.username + '",' +'"score":' +'"' + UserInfo.score + '",' + '"tag":' + '"score"' + '}';
+                    console.log(dataString);
+                    this.socket.emit('sendData',dataString);
+                }
+                
             }else{
                 alert("十秒时间到");
                 // this.bestScore = this.score;
                 //将最好成绩存储起来
                 //将当前分数发给服务器
-                var sendData = '{"username:"' + '"' + Global.user.username  + '",' + "score:"+ '"' + this.score + '"}';
-                this.socket.emit('senddata',sendData);
+                // var sendData = '{"username:"' + '"' + Global.user.username  + '",' + "score:"+ '"' + this.score + '"}';
+                // //向服务器发送广播
+                // this.socket.emit('senddata',sendData);
                 Global.isStart = false;
+                //如果从缓存中取出来的数据是undefined的就将当前分数存进去
                 if(cc.sys.localStorage.getItem("best") === undefined){
-                    cc.sys.localStorage.setItem("best",this.score);
+                    cc.sys.localStorage.setItem("best",UserInfo.score);
                 }else{
                     this.bestScore = cc.sys.localStorage.getItem("best");
                 }
-                if(this.score > this.bestScore){
-                    this.bestScore = this.score;
+                if(UserInfo.score > this.bestScore){
+                    this.bestScore = UserInfo.score;
                     cc.sys.localStorage.setItem("best", this.bestScore);
                 }
                 //取消所有计时器
@@ -79,14 +95,5 @@ cc.Class({
         this.unscheduleAllCallbacks();
     },
     update (dt) {
-        // if(Global.isStart){
-        //     this.beginTime();
-        //     if(this.time >10){
-        //         Global.isStart = false;
-        //     }
-        // } 
-        if(this.time < 10){
-            cc.log("this.time is " + this.time);
-        }
     },
 });

@@ -1,13 +1,10 @@
-// Learn cc.Class:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/class/index.html
-// Learn Attribute:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/reference/attributes/index.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
-const server = require("Server");
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2018-04-10 12:35:47 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-04-10 16:32:55
+ */
+const serverHost = require("Host");
 cc.Class({
     extends: cc.Component,
 
@@ -32,7 +29,7 @@ cc.Class({
 
     onLoad () {
         this.operation = '';
-        this.ServerLink = server.host;
+        this.ServerLink = serverHost.host;
         this.toastParent.active = false;
         cc.log("node is " +this.node.name);
     },
@@ -100,21 +97,22 @@ cc.Class({
             //message是一个JSON对象
           this.showEditBox(message.msg,label);
         }
-        
-        
-       
     },
     showEditBox : function(message,label){
+        var self = this;
         //该message就是一个字符串类型的数据
-        if(message === '信息正确'){
+        if(message === '登录成功'){
             this.scheduleOnce(function(){
                 //把相应的用户信息保存起来，初始化全局变量
-                UserInfo.user.username = self.username;
-                UserInfo.user.password = self.password;
+                
                 //登录成功后2s自动进入游戏
                 cc.director.loadScene("game");
-            },3);
-            
+            },1);
+            // this.unscheduleAllCallbacks();
+            UserInfo.username = self.username;
+            UserInfo.password = self.password;
+            cc.log("userInfo's username is " + UserInfo.username);
+            cc.log("userInfo's password is " + UserInfo.password);
         }
         label.string = message;
 
@@ -142,7 +140,7 @@ cc.Class({
                 break;     
         }
         this.sendRequest(this.operation);
-        this.ServerLink = server.host;
+        this.ServerLink = serverHost.host;
     },
     update(){
         this.username = this.usernameInput.string;
