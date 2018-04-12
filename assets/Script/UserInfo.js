@@ -17,13 +17,14 @@ window.UserInfo={
                 if(cc.sys.isNative){
                     window.io = SocketIO;
                 }else{
-                    require('socket.io');
+                    if(io === undefined){
+                        require('socket.io');
+                    }
                 }
-                this.longlink = io('http://192.168.1.103:3000');
+                this.longlink = io('http://192.168.1.179:3000');
                 var self = this;
                 this.longlink.on('conn',function(msg){
                     console.log("msg is " +JSON.stringify(msg));
-                    // self.longlink.emit('test','hello world');
                 });
            }
         return getInstance();

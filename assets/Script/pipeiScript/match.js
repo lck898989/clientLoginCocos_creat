@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 17:58:20
+ * @Last Modified time: 2018-04-12 14:01:54
  */
 cc.Class({
     extends: cc.Component,
@@ -30,6 +30,7 @@ cc.Class({
         this.socket = UserInfo.socket;
         cc.log("in match socket is " + this.socket);
         this.countDown.active = false;    
+        this.isPiPei = false;
     },
 
     start () {
@@ -46,39 +47,17 @@ cc.Class({
             var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp"' + '}';
             cc.log("dataString is " +pvp);
             this.socket.emit('pvp',pvp);
-            // var self = this;
-            // //监听
-            // this.socket.on('pvp',function(msg){
-            //     //匹配成功
-            //     self.matchLabel.getComponent(cc.Label).string = msg;
-            //     var info = self.matchLabel.getComponent(cc.Label).string;
-            //     //如果匹配成功的话就等待玩家确认是否跟该玩家匹配
-            //     if(info === '匹配成功'){
-            //         //将对手信息显示出来
-            //         self.rival.children[0].getComponent(cc.Label).string = "用户信息"
-            //         //再次确认是否要与对手匹配
-            //         if(self.isOk === undefined){
-            //             //等待玩家进行确认匹配
-                        
-            //         }else if(self.isOk){
-            //             //向服务器发送确认匹配请求
-            //             var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp",' + '"code":' + '"1"' + '}';
-            //             self.socket.emit('pvp',pvp);
-            //             //进入房间
-            //             cc.director.loadScene('matchedRoom');
-            //         }
-            //     }
-            // });
+            var self = this;
         }
         
     },
     //确认匹配对手
     confirmRival : function(rival){
-        this.isOk = true;
-        var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp"' + '}';
-        this.socket.emit('pvp',pvp);
-        //进入房间
-        cc.director.loadScene('matchedRoom');
+        // this.isOk = true;
+        // var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp"' + '}';
+        // this.socket.emit('pvp',pvp);
+        // //进入房间
+        // cc.director.loadScene('matchedRoom');
     },
     //生成一个计时器
     timer : function(){
@@ -88,7 +67,7 @@ cc.Class({
         this.schedule(function(){
             self.time -= 1;
             if(self.time < 0){
-                self.matchLabel.getComponent(cc.Label).string = '匹配失败，时间已到'
+                self.matchLabel.getComponent(cc.Label).string = '匹配失败，时间已到';
                 //取消计时器
                 self.unscheduleAllCallbacks();
                 self.countDown.active = false;
@@ -104,6 +83,47 @@ cc.Class({
                 this.timerStart = false;
             }
         },1);
+       
+    },
+    listenPVP : function(){
+        if(this.isPiPei){
+            //如果已经匹配了退出
+            return;
+        }else{
+            var self = this;
+            var re = self.matchLabel.getComponent(cc.Label).string
+            if(re != '匹配成功'){
+                    //监听服务器发来的数据
+                this.socket.on('pvp',function(msg){
+                    console.log("msg is " + msg);
+                    //匹配成功
+                    try{
+                        var message = JSON.parse(msg);
+                        SwitchScene.roomID = message.roomID;
+                        SwitchScene.rivalInfo = [];
+                        SwitchScene.rivalInfo.push(message.user1);
+                        SwitchScene.rivalInfo.push(message.user2);
+                        self.matchLabel.getComponent(cc.Label).string = message.msg;
+                    }catch(e){
+                        self.matchLabel.getComponent(cc.Label).string = msg;
+                    }
+                    
+                });
+                
+            }else{
+                this.isPiPei = true;
+                self.schedule(function(){
+                        
+                },2);
+                //取消所有的计时器
+                self.unscheduleAllCallbacks();
+                //进入房间
+                cc.director.loadScene('matchedRoom');
+                return;
+            }
+        }
+        
+            
     },
     //取消匹配
     cancelMatch : function(){
@@ -113,39 +133,13 @@ cc.Class({
         //不再显示计时器
         this.countDown.active = false;
         this.matchLabel.getComponent(cc.Label).string = "取消匹配";
-        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '""' + '}';
-        this.socket.emit('cancelmatch',dataString);
+        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"cancel"' + '}';
+        this.socket.emit('cancel',dataString);
+        this.socket.on('cancel',function(msg){
+             console.log("in cancelMatch msg is " + msg);
+        });
     },
     update (dt) {
-        var self = this;
-        
-        // this.countDown.getComponent(cc.Label).string = this.time;
-        this.socket.on('pvp',function(msg){
-            console.log("msg is " + msg);
-            //匹配成功
-            var message = JSON.parse(msg);
-            self.matchLabel.getComponent(cc.Label).string = message.msg;
-            var info = self.matchLabel.getComponent(cc.Label).string;
-            //如果匹配成功的话就等待玩家确认是否跟该玩家匹配
-            if(info === '匹配成功'){
-               
-                self.countDown.active = false;
-                self.timerStart = false;
-                //将对手信息显示出来
-                self.rival.children[0].getComponent(cc.Label).string = message.roomID;
-                self.schedule(function(){
-                   
-                },2);
-                //取消所有的计时器
-                self.unscheduleAllCallbacks();
-                //进入房间
-                cc.director.loadScene('matchedRoom');
-            }  
-            // self.socket.on('join',function(msg){
-            //     console.log("in join event msg is " + msg);
-            //     var message = JSON.parse(msg);
-            //     console.log(message.username);
-            // });
-        });
+        this.listenPVP();
     },
 });
