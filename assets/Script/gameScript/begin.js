@@ -32,14 +32,17 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
+        this.count = 0;s
     },
     init : function(){
         Global.isStart = false;
         cc.log("init start");
     },
     startEvent : function(){
-        Global.isStart = true;
+        this.count++;
+        if(this.count === 1){
+            Global.isStart = true;
+        }
         cc.log("Global.isStart is " + Global.isStart);
     },
     start () {

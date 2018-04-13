@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:03:25 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 12:20:08
+ * @Last Modified time: 2018-04-13 12:55:35
  */
 const link = require('link');
 cc.Class({
@@ -31,6 +31,8 @@ cc.Class({
         cc.director.loadScene("inTheMatch");
         // var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp"' + '}';
         // UserInfo.socket().emit('pvp',pvp);
-    }
-    // update (dt) {},
+    },
+    update (dt) {
+        
+    },
 });

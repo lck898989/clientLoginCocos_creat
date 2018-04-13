@@ -154,7 +154,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 97.87,
+      "width": 40,
       "height": 40
     },
     "_rotationX": 0,
@@ -164,7 +164,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -316,
-      "y": 107
+      "y": 102
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -189,7 +189,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "Label",
+    "_N$string": "我",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -237,8 +237,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 182,
-      "y": -61
+      "x": 171,
+      "y": 105
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -781,8 +781,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 311,
-      "y": -61
+      "x": 300,
+      "y": 105
     },
     "_skewX": 0,
     "_skewY": 0,

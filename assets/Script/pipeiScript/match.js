@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-12 14:01:54
+ * @Last Modified time: 2018-04-13 15:16:02
  */
 cc.Class({
     extends: cc.Component,
@@ -40,16 +40,15 @@ cc.Class({
         this.countDown.active = true;
         //匹配中
         this.matchLabel.active = true;
-        this.matchLabel.getComponent(cc.Label).string = "匹配中,请稍后..."
+        this.matchLabel.getComponent(cc.Label).string = "匹配中,请稍后...";
         if(this.timerStart === undefined || this.timerStart === false){
             this.timer();
             this.countDown.getComponent(cc.Label).string = this.time;
-            var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp"' + '}';
+            var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp",' +  '"score":' + '"0"' + '}';
             cc.log("dataString is " +pvp);
             this.socket.emit('pvp',pvp);
             var self = this;
         }
-        
     },
     //确认匹配对手
     confirmRival : function(rival){
