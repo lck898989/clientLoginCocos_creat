@@ -33,13 +33,13 @@ cc.Class({
         this.time = 10;
         //分数初始化为零
         this.score = 0;
-        this.beg();
         if(UserInfo.username != null){
             cc.find("Canvas/myself").getComponent(cc.Label).string = UserInfo.username;
         }
         //如果对手信息为空的话
         if(SwitchScene.rivalInfo != null){
             for(let i = 0; i< SwitchScene.rivalInfo.length;i++){
+                //如果当前用户名等于切换场景时候保存的用户信息的话,显示对手信息
                  if(UserInfo.username != SwitchScene.rivalInfo[i].username){
                      //将对手信息显示出来
                     cc.find("Canvas/rival").getcomponent(cc.Label).string = SwitchScene.rivalInfo[i].username;
@@ -55,10 +55,10 @@ cc.Class({
                  //启动倒计时
                 self.countDown();
             }
-            var dataString = '{"username":' + '"lck",' + '"roomID":' + '"0"' + '}';
-                self.socket.emit('time',dataString);
-                 //启动倒计时
-                self.countDown();
+            // var dataString = '{"username":' + '"lck",' + '"roomID":' + '"0"' + '}';
+            //     self.socket.emit('time',dataString);
+            //      //启动倒计时
+            //     self.countDown();
             
         });
         this.node.on('mousedown',function(){
@@ -70,25 +70,21 @@ cc.Class({
             if(UserInfo.username != null){
                 //将数据发送到服务器
                 var dataString = '{"username":' + '"' +UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '",' + '"score":' + '"' + self.score + '"' + '}';
-                self.socket('add',dataString);
+                self.socket.emit('add',dataString);
             }
-            //测试：：：将数据发送到服务器
-            var dataString = '{"username":' + '"lck",' + '"roomID":' + '"0",' + '"score":' + '"' + self.score + '"' + '}';
-            self.socket('addScore',dataString);
         });
         //监听服务器给发送的消息
         this.socket.on('addScore',function(msg){
             cc.log("in socket msg is " + msg);
+            //判断服务器给发送的消息
+            if(msg === ''){
+                
+            }
         });
     },
 
     start () {
 
-    },
-    beg :function(){
-        var self = this;
-        
-        
     },
     //倒计时
     countDown : function(){
@@ -96,10 +92,6 @@ cc.Class({
         this.schedule(function(){
              this.time -= 1;
         },1)
-    },
-    //点击mainbutton的时候，进行与服务器的交互
-    mainbutton : function(){
-
     },
     update (dt) {
         //显示时间
