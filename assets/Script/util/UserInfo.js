@@ -21,7 +21,7 @@ window.UserInfo={
                         require('socket.io');
                     }
                 }
-                this.longlink = io('http://192.168.1.138:3000');
+                this.longlink = io('http://localhost:3000');
                 var self = this;
                 this.longlink.on('conn',function(msg){
                     console.log("msg is " +JSON.stringify(msg));

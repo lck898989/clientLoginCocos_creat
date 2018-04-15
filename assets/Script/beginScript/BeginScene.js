@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 10:42:59
+ * @Last Modified time: 2018-04-14 13:04:06
  */
 const serverHost = require("Host");
 cc.Class({
@@ -84,8 +84,8 @@ cc.Class({
             // JSON.stringify()
             // + '?username=' + self.username + '&password=' + self.password
             //JSON.stringify({'username':'adsf','password':'asd'})
-            cc.log('{"username":' + '"' + self.username + '",' + '"password"' + ":" + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
-            xhr.send('{"username":' + '"' + self.username + '",' + '"password"' + ":" + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
+            cc.log('{"username":' + '"' + self.username + '",' + '"password":' + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
+            xhr.send('{"username":' + '"' + self.username + '",' + '"password":' + '"' + self.password + '",' + '"tag"' + ":" + '"' + operation + '"}');
             // xhr.send();
     },
     overAndStoreUser : function(label,message){

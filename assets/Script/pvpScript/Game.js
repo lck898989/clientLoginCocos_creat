@@ -2,11 +2,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        //开始按钮
-        begin : {
-            default : null,
-            type    : cc.Node,
-        },
         //对手的分数
         rivalScore : {
             default : null,
@@ -30,6 +25,7 @@ cc.Class({
     onLoad () {
         var self = this;
         this.socket = UserInfo.socket;
+        this.socket.emit('time')
         this.time = 10;
         //分数初始化为零
         this.score = 0;
@@ -48,14 +44,18 @@ cc.Class({
             }
         }
         //开始按钮监听事件开始
-        this.begin.on('mousedown',function(){
-            if(UserInfo.username != null){
-                var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
-                self.socket.emit('time',dataString);
-                 //启动倒计时
-                self.countDown();
-            }
-        });
+        // this.begin.on('mousedown',function(){
+        //     if(UserInfo.username != null){
+        //         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
+        //         self.socket.emit('time',dataString);
+        //          //启动倒计时
+        //         self.countDown();
+        //     }
+        // });
+        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '",' + '"score":' + '"0"' + '}';
+        this.socket.emit('time',dataString);
+        //开启倒计时
+        this.countDown();
         //点击按钮的时候出发的监听事件
         this.node.on('mousedown',function(){
             //加分
@@ -71,11 +71,14 @@ cc.Class({
         //监听服务器给发送的消息(对手的分数)
         this.socket.on('addscore',function(msg){
             cc.log("in socket function's msg is " + msg);
-            //把分数提取出来显示
-            var scoreMessage = msg.score;
-            self.rivalScore.getComponent(cc.Label).string = scoreMessage;
+            var jsonMessage = JSON.parse(msg);
+            if(jsonMessage.username != UserInfo.username){
+                 //把分数提取出来显示
+                var scoreMessage = jsonMessage.score;
+                self.rivalScore.getComponent(cc.Label).string = scoreMessage;
+            }
+           
             //判断服务器给发送的消息
-            
         });
         // var stringarr = [];
         // stringarr.push('username,lck');
