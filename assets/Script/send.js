@@ -15,6 +15,10 @@ cc.Class({
         //     default : null,
         //     type    : cc.Scrollbar,
         // }
+        showBox : {
+            default : null,
+            type    : cc.Node,
+        }
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -31,8 +35,9 @@ cc.Class({
         var self = this;
         //准备好的玩家个数（除了自己）
         this.readyCount = 0;
-        this.showBoxLabel = cc.find("Canvas/show/view/content/item").getComponent(cc.Label);
-        this.showBoxLabel.fontSize = 40;
+        this.showBoxLabel = this.showBox.getChildByName("view").getChildByName("content").getChildByName("item").getComponent(cc.Label);
+        cc.log("showBox is " + this.showBoxLabel);
+        this.showBoxLabel.fontSize = 35;
         cc.log("showBoxLabel is " + this.showBoxLabel);
         cc.log("infoLabel is " + this.infoLabel);
         cc.log("this is " + this);
@@ -52,21 +57,19 @@ cc.Class({
         }
         cc.log("this.node's name is " + this.node.name);
         this.socket.on('sendmessage',function(msg){
-            console.log("in getMessage function msg is " + msg);
-            var stringjson =JSON.stringify(msg);
-            var jsonObject = JSON.parse(stringjson);
-            cc.log("stringjson is " + stringjson);
-            //如果是send节点就显示不是node节点就不显示
-            if(self.node.name === 'send'){
+                console.log("in getMessage function msg is " + msg);
+                var stringjson =JSON.stringify(msg);
+                var jsonObject = JSON.parse(stringjson);
+                cc.log("stringjson is " + stringjson);
+                //如果是send节点就显示不是node节点就不显示
                 //如果不是自己的名字的时候就显示相关信息
                 if((jsonObject.username != UserInfo.username)){
                     // self.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.LEFT;
-                    //把对手的信息显示出来
-                    self.showBoxLabel.string += jsonObject.username + ":" + jsonObject.text + "\n\n";
-                    
+                    if(self.showBoxLabel != null){
+                        //把对手的信息显示出来
+                        self.showBoxLabel.string += jsonObject.username + ":" + jsonObject.text + "\n\n";
+                    }
                 }
-            }
-            
             
         });
         //监听准备事件
@@ -99,7 +102,18 @@ cc.Class({
                 }
             }
            
-        })
+        });
+        //监听用户离开房间事件
+        this.socket.on('leave',function(msg){
+            cc.log("msg is " + msg);
+            if(msg.username != UserInfo.username){
+                if(self.showBoxLabel != null){
+                    //如果不等于当前的用户的话进行提醒是否另一个人要退出房间
+                    self.showBoxLabel.string += msg.username + "离开了房间！！！" + '\n\n'; 
+                }
+               
+            }           
+        });
     },
     //拼接字符串方法
     concatString : function(stringArr){
@@ -120,14 +134,12 @@ cc.Class({
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
         cc.log(dataString);
         //如果是node节点就发送信息
-        if(this.node.name === 'send'){
             this.socket.emit('sendmessage',dataString);
             // this.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.RIGHT;
             //先把自己的信息显示
             this.showBoxLabel.string += UserInfo.username + ":" + this.info + "\n\n";
             cc.log("showbox is " + this.showBoxLabel);
             cc.log("this is " + this);
-        }
         
     },
     readClicked : function(){
@@ -142,6 +154,14 @@ cc.Class({
                  //将准备好的状态发送给服务器
                 UserInfo.socket.emit('ready',dataString);
             }
+    },
+    logOut : function(){
+        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
+        this.socket.emit('leave',dataString);
+        //如果是自己登出房间的话切换场景
+        cc.director.loadScene('inTheMatch');
+        this.showBoxLabel.string = '';
+        this.socket.on('disconnect');
     },
     update (dt) {
         

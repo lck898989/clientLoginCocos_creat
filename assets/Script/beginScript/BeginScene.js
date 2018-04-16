@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-14 13:04:06
+ * @Last Modified time: 2018-04-16 12:42:32
  */
 const serverHost = require("Host");
 cc.Class({
@@ -72,8 +72,8 @@ cc.Class({
                         //存储用户信息
                         self.overAndStoreUser(label,response);
                     }
-               
-                    
+                }else{
+                    label.string = "网络已经断开";
                 }
             };    
             cc.log("username is " + self.username);
@@ -104,7 +104,10 @@ cc.Class({
         if(message === '登录成功'){
             this.scheduleOnce(function(){
                 //把相应的用户信息保存起来，初始化全局变量
-                
+                UserInfo.socket = io('http://192.168.1.115:3000');
+                UserInfo.socket.on('conn',function(msg){
+                    cc.log("msg is " + JSON.stringify(msg));
+                })
                 //登录成功后2s自动进入游戏
                 cc.director.loadScene("ptype");
             },1);

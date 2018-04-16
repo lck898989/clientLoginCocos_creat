@@ -16,8 +16,17 @@ cc.Class({
         timec : {
             default : null,
             type    : cc.Node,
+        },
+        //输入框对象
+        info  : {
+            default : null,
+            type    : cc.Node,
+        },
+        //聊天信息框
+        showBox : {
+            default : null,
+            type    : cc.Node,
         }
-
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -65,6 +74,7 @@ cc.Class({
             if(UserInfo.username != null){
                 //将数据发送到服务器
                 var dataString = '{"username":' + '"' +UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '",' + '"score":' + '"' + self.score + '"' + '}';
+                cc.log("dataString is "+dataString);
                 self.socket.emit('addscore',dataString);
             }
         });
@@ -80,6 +90,20 @@ cc.Class({
            
             //判断服务器给发送的消息
         });
+        this.socket.on('sendmessage',function(msg){
+            console.log("in getMessage function msg is " + msg);
+            var stringjson =JSON.stringify(msg);
+            var jsonObject = JSON.parse(stringjson);
+            cc.log("stringjson is " + stringjson);
+            //如果是send节点就显示不是node节点就不显示
+                //如果不是自己的名字的时候就显示相关信息
+                if((jsonObject.username != UserInfo.username)){
+                    // self.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.LEFT;
+                    //把对手的信息显示出来
+                    self.showBoxLabel.string += jsonObject.username + ":" + jsonObject.text + "\n\n";
+                    
+                }
+        });
         // var stringarr = [];
         // stringarr.push('username,lck');
         // stringarr.push('password,adasd');
@@ -91,11 +115,10 @@ cc.Class({
             //服务端发送谁赢了的信息（名字，分数）
             cc.log("msg is " + msg);
             var jsonMsg = JSON.parse(msg);
+            cc.log("jsonMsg is " + jsonMsg);
             //对手的输赢状态
             var win = jsonMsg.win;
             cc.log("win is " + win);
-            var shibai = jsonMsg.shibai;
-            cc.log("shibai is  " + shibai);
         });
 
     },
@@ -125,6 +148,20 @@ cc.Class({
              }
         },1);
     },
+    //聊天功能
+    sendMessage : function(){
+        //获得输入信息
+        this.info = this.infoLabel.getComponent(cc.EditBox).string;
+        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
+        cc.log(dataString);
+        //如果是node节点就发送信息
+        this.socket.emit('sendmessage',dataString);
+        // this.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.RIGHT;
+        //先把自己的信息显示
+        this.showBoxLabel.string += UserInfo.username + ":" + this.info + "\n\n";
+        cc.log("showbox is " + this.showBoxLabel);
+        cc.log("this is " + this);
+    },
     update (dt) {
         //显示时间
         this.timec.getComponent(cc.Label).string = this.time;
@@ -132,8 +169,8 @@ cc.Class({
         if(this.time < 1){
             //关闭所有的计时器
             this.unscheduleAllCallbacks();
-            //将结果信息显示出来
-            this.timec.getComponent(cc.Label).string = this.resultName;
+            //禁用点击按钮
+            this.node.getComponent(cc.Button).interactable = false;
         }
     },
 });
