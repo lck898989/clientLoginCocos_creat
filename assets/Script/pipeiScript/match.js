@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-17 12:47:53
+ * @Last Modified time: 2018-04-17 18:09:51
  */
 cc.Class({
     extends: cc.Component,
@@ -25,36 +25,41 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        cc.log("*(*(*(*(**************************((((()))))))))");
         var self = this;
         cc.log(this.rival.getComponent(cc.Label));
         //显示自己的信息
         this.rival.getComponent(cc.Label).string = UserInfo.username;
         //不显示正在匹配
         this.matchLabel.active = false;
-        UserInfo.matchSocket = io("http://192.168.1.153:3000",{'force new connection': true});
-        UserInfo.matchSocket.on('conn',function(msg){
-            cc.log("msg is " + JSON.stringify(msg));
-        });
-        cc.log("in match socket is " + UserInfo.matchSocket);
+        cc.log("connect status is " + UserInfo.socket.connected);
+        cc.log("socket's id is " + UserInfo.socket.id);
+        if(UserInfo.socket.connected === false){
+            cc.log('--------------------------------')
+            UserInfo.socket.io.open();
+            UserInfo.socket = io.connect("ws://192.168.1.153:3000",{'force new connection': true,"autoConnect": true});
+            cc.log("connect is " + UserInfo.socket.connected);
+        }
+        this.socket = UserInfo.socket;
+        
+        cc.log("in match socket is " + this.socket + "and status is " + this.socket.connected);
         this.countDown.active = false;    
         this.isPiPei = false;
         cc.log("***********************监听匹配事件*************************");
         cc.log("self.matchLabel is " + self.matchLabel);
         //监听匹配事件
-        UserInfo.matchSocket.on('pvp',function(msg){
+        this.socket.on('pvp',function(msg){
             cc.log("adadfadfadfadfdddddd" + " " + this.node);
             console.log("msg is " + msg);
             //匹配成功
             try{
                 var message = JSON.parse(msg);
-                SwitchScene.roomID = message.roomID;
-                SwitchScene.rivalInfo = [];
-                SwitchScene.rivalInfo.push(message.user1);
-                SwitchScene.rivalInfo.push(message.user2);
                 self.matchLabel.getComponent(cc.Label).string = message.msg;
                 if(message.msg === '匹配成功'){
-                    //断开连接
-                    UserInfo.matchSocket.disconnect();
+                    SwitchScene.roomID = message.roomID;
+                    SwitchScene.rivalInfo = [];
+                    SwitchScene.rivalInfo.push(message.user1);
+                    SwitchScene.rivalInfo.push(message.user2);
                     cc.director.loadScene("matchedRoom");
                 }
             }catch(e){
@@ -77,7 +82,7 @@ cc.Class({
             this.countDown.getComponent(cc.Label).string = this.time;
             var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp",' +  '"score":' + '"0"' + '}';
             cc.log("dataString is " +pvp);
-            UserInfo.matchSocket.emit('pvp',pvp);
+            this.socket.emit('pvp',pvp);
         }
     },
     //确认匹配对手
@@ -124,8 +129,8 @@ cc.Class({
         this.countDown.active = false;
         this.matchLabel.getComponent(cc.Label).string = "取消匹配";
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"cancel"' + '}';
-        UserInfo.matchSocket.emit('cancel',dataString);
-        UserInfo.matchSocket.on('cancel',function(msg){
+        this.socket.emit('cancel',dataString);
+        this.socket.on('cancel',function(msg){
              console.log("in cancelMatch msg is " + msg);
         });
     },

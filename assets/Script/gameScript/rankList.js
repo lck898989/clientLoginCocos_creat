@@ -2,10 +2,9 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 08:52:22 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 11:19:13
+ * @Last Modified time: 2018-04-17 14:32:19
  */
 const mainButton = require('gameButton');
-const link = require('link');
 cc.Class({
     extends: cc.Component,
 
@@ -34,9 +33,6 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        var longLinkCom = link.prototype;
-        this.socket = UserInfo.socket;
-        cc.log("长连接socket is " + this.socket);
         cc.log("score is " + this.score);
         cc.log("in rankList Global's username is " + UserInfo.username);
     },

@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-17 11:16:59
+ * @Last Modified time: 2018-04-17 14:57:41
  */
 const serverHost = require("Host");
 cc.Class({
@@ -104,7 +104,8 @@ cc.Class({
         if(message === '登录成功'){
             this.scheduleOnce(function(){
                 //把相应的用户信息保存起来，初始化全局变量
-                UserInfo.socket = io('http://192.168.1.153:3000');
+                // UserInfo.matchModeSocket = io('ws://192.168.1.153:3000');
+                UserInfo.socket  = io('ws://192.168.1.153:3000');
                 UserInfo.socket.on('conn',function(msg){
                     cc.log("msg is " + JSON.stringify(msg));
                 })

@@ -24,16 +24,16 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        cc.log("in room rival's length is " + SwitchScene.rivalInfo.length);
         this.messageCount = 0;
         //自己是否已经准备
         this.isReady = false;
         //别人是否已经准备
         this.otherIsReady = false;
-        UserInfo.roomSocket = io("http://192.168.1.153:3000",{'force new connection': true});
-        UserInfo.roomSocket.on('conn',function(msg){
-            cc.log("msg is " +msg);
-        })
-        cc.log("in load socke is " + UserInfo.roomSocket);
+        this.socket = UserInfo.socket;
+        var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
+        
+        cc.log("in load socke is " + this.socket);
         this.isReady = false;
         var self = this;
         //准备好的玩家个数（除了自己）
@@ -61,7 +61,7 @@ cc.Class({
         cc.log("this.node's name is " + this.node.name);
         
         //监听准备事件
-        UserInfo.roomSocket.on('ready',function(msg){
+        this.socket.on('ready',function(msg){
             //如果当前节点是ready节点的话进行准备，不是ready节点上一边去
             if(self.node.name === 'ready'){
                 cc.log("msg is " + msg);
@@ -85,8 +85,7 @@ cc.Class({
                 }
                 //如果对手已经准备好了一起进入游戏
                 if(self.otherIsReady && self.isReady){
-                    //退出聊天socket
-                    UserInfo.roomSocket.disconnect();
+                    
                     //如果另外一个对手也已经准备好了就一起进入场景
                     cc.director.loadScene("pvpGame");
                 }
@@ -94,17 +93,18 @@ cc.Class({
            
         });
         //监听用户离开房间事件
-        UserInfo.roomSocket.on('leave',function(msg){
+        this.socket.on('leave',function(msg){
             cc.log("msg is " + msg);
             if(msg.username != UserInfo.username){
                 if(self.showBoxLabel != null){
                     //如果不等于当前的用户的话进行提醒是否另一个人要退出房间
                     self.showBoxLabel.string += msg.username + "离开了房间！！！" + '\n\n'; 
+                   
                 }
                
             }           
         });
-        UserInfo.roomSocket.on('sendmessage',function(msg){
+        this.socket.on('sendresponse',function(msg){
             console.log("in getMessage function msg is " + msg);
             var stringjson =JSON.stringify(msg);
             var jsonObject = JSON.parse(stringjson);
@@ -139,19 +139,15 @@ cc.Class({
        //获得输入信息
         this.info = this.infoLabel.getComponent(cc.EditBox).string;
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
-        var data = {
-                "username" : UserInfo.username,
-                "message"  : this.info,
-                "roomID"   : SwitchScene.roomID,
-        }
-        cc.log(data);
-        cc.log("In sendMessage function socket is " + UserInfo.roomSocket);
+        cc.log("dataString is " + dataString);
+        cc.log("In sendMessage function socket is " + this.socket);
         //如果是node节点就发送信息
-            UserInfo.roomSocket.emit('sendmessage',dataString);
-            //先把自己的信息显示
-            this.showBoxLabel.string += UserInfo.username + ":" + this.info + "\n\n";
-            cc.log("showbox is " + this.showBoxLabel);
-            cc.log("this is " + this);
+        // this.socket.emit('sendmessage',dataString);
+        this.socket.emit("sendmessage",dataString);
+        //先把自己的信息显示
+        this.showBoxLabel.string += UserInfo.username + ":" + this.info + "\n\n";
+        cc.log("showbox is " + this.showBoxLabel);
+        cc.log("this is " + this);
         
     },
     readClicked : function(){
@@ -161,7 +157,7 @@ cc.Class({
             cc.log(UserInfo.socket);
             var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
             cc.log("in ready function dataString is " + dataString);
-            cc.log("in readClicked socket is " + UserInfo.roomSocket);
+            cc.log("in readClicked socket is " + this.socket);
             if(this.node.name === 'ready'){
                  //将准备好的状态发送给服务器
                 UserInfo.socket.emit('ready',dataString);
@@ -169,13 +165,14 @@ cc.Class({
     },
     logOut : function(){
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
-        UserInfo.roomSocket.emit('leave',dataString);
+        this.socket.emit('leave',dataString);
         
+        this.showBoxLabel.string = '';
         //退出房间之后将连接关闭
-        UserInfo.roomSocket.disconnect();
+        this.socket.disconnect();
         //如果是自己登出房间的话切换场景
         cc.director.loadScene('inTheMatch');
-        this.showBoxLabel.string = '';
+        this.socket = null;
     },
     update (dt) {
     },

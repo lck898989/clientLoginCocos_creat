@@ -22,11 +22,14 @@ window.UserInfo={
     //        }
     //     return getInstance();
     // })(),
-    //匹配socket
-    matchSocket : null,
-    //房间聊天室socket
-    roomSocket : null,
-    //游戏场景socket
-    gameSocket : null,
+    //匹配模式socket
+    // matchModeSocket : null,
+    // //匹配socket
+    // matchSocket : null,
+    // //房间聊天室socket
+    // roomSocket : null,
+    // //游戏场景socket
+    // gameSocket : null,
+    socket     : null,
     
 }

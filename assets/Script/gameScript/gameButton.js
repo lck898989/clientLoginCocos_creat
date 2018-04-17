@@ -2,12 +2,11 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-08 16:51:27 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-13 14:23:20
+ * @Last Modified time: 2018-04-17 14:31:13
  */
 
 var begin = require('begin');
 var Global = require('Global');
-const link = require('link');
 const gameB = require('gameButton');
 cc.Class({
     extends: cc.Component,

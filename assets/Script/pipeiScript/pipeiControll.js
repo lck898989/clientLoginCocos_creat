@@ -2,9 +2,8 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:03:25 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-16 12:53:13
+ * @Last Modified time: 2018-04-17 14:58:15
  */
-const link = require('link');
 cc.Class({
     extends: cc.Component,
 
@@ -16,7 +15,6 @@ cc.Class({
 
     onLoad () {
         this.socket = UserInfo.socket;
-        cc.log("in pipeicontroll socket is " + this.socket);
     },
 
     start () {

@@ -2,14 +2,13 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-09 09:19:52 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-11 11:35:50
+ * @Last Modified time: 2018-04-17 14:31:32
  */
 
 const begin = require("begin");
 const gameButton = require("gameButton");
 const rankList = require("rankList");
 const back = require("back");
-const link = require("link");
 cc.Class({
     extends: cc.Component,
 
@@ -40,14 +39,7 @@ cc.Class({
         // this.socketPrototype.init();
         // cc.log("socket is " + this.socketPrototype);
         // cc.log(this.socketPrototype.link);
-        
-        cc.log("lognlink is " + link.prototype);
-        this.Link = link.prototype;
-        cc.log("link is " + this.Link);
-        this.socket = UserInfo.socket;
-        cc.log("in game socket is " + this.socket);
         // cc.log(this.link.longLink);
-        this.Link.init();
         var startCom = begin.prototype;
         startCom.init();
         var gameButtonCom = gameButton.prototype;
