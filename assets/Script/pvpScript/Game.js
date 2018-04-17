@@ -150,6 +150,7 @@ cc.Class({
     },
     //聊天功能
     sendMessage : function(){
+        cc.log("this node is " + this.node.name);
         //获得输入信息
         this.info = this.infoLabel.getComponent(cc.EditBox).string;
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';

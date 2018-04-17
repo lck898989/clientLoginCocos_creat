@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-16 16:12:49
+ * @Last Modified time: 2018-04-17 12:47:53
  */
 cc.Class({
     extends: cc.Component,
@@ -31,17 +31,17 @@ cc.Class({
         this.rival.getComponent(cc.Label).string = UserInfo.username;
         //不显示正在匹配
         this.matchLabel.active = false;
-        this.socket = UserInfo.socket;
-        this.socket.on('conn',function(msg){
+        UserInfo.matchSocket = io("http://192.168.1.153:3000",{'force new connection': true});
+        UserInfo.matchSocket.on('conn',function(msg){
             cc.log("msg is " + JSON.stringify(msg));
         });
-        cc.log("in match socket is " + this.socket);
+        cc.log("in match socket is " + UserInfo.matchSocket);
         this.countDown.active = false;    
         this.isPiPei = false;
         cc.log("***********************监听匹配事件*************************");
         cc.log("self.matchLabel is " + self.matchLabel);
         //监听匹配事件
-        this.socket.on('pvp',function(msg){
+        UserInfo.matchSocket.on('pvp',function(msg){
             cc.log("adadfadfadfadfdddddd" + " " + this.node);
             console.log("msg is " + msg);
             //匹配成功
@@ -53,6 +53,8 @@ cc.Class({
                 SwitchScene.rivalInfo.push(message.user2);
                 self.matchLabel.getComponent(cc.Label).string = message.msg;
                 if(message.msg === '匹配成功'){
+                    //断开连接
+                    UserInfo.matchSocket.disconnect();
                     cc.director.loadScene("matchedRoom");
                 }
             }catch(e){
@@ -75,7 +77,7 @@ cc.Class({
             this.countDown.getComponent(cc.Label).string = this.time;
             var pvp = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"pvp",' +  '"score":' + '"0"' + '}';
             cc.log("dataString is " +pvp);
-            this.socket.emit('pvp',pvp);
+            UserInfo.matchSocket.emit('pvp',pvp);
         }
     },
     //确认匹配对手
@@ -122,8 +124,8 @@ cc.Class({
         this.countDown.active = false;
         this.matchLabel.getComponent(cc.Label).string = "取消匹配";
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"tag":' + '"cancel"' + '}';
-        this.socket.emit('cancel',dataString);
-        this.socket.on('cancel',function(msg){
+        UserInfo.matchSocket.emit('cancel',dataString);
+        UserInfo.matchSocket.on('cancel',function(msg){
              console.log("in cancelMatch msg is " + msg);
         });
     },

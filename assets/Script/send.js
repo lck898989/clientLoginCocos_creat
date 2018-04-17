@@ -29,8 +29,11 @@ cc.Class({
         this.isReady = false;
         //别人是否已经准备
         this.otherIsReady = false;
-        this.socket = UserInfo.socket;
-        cc.log("in load socke is " + this.socket);
+        UserInfo.roomSocket = io("http://192.168.1.153:3000",{'force new connection': true});
+        UserInfo.roomSocket.on('conn',function(msg){
+            cc.log("msg is " +msg);
+        })
+        cc.log("in load socke is " + UserInfo.roomSocket);
         this.isReady = false;
         var self = this;
         //准备好的玩家个数（除了自己）
@@ -56,24 +59,9 @@ cc.Class({
             }
         }
         cc.log("this.node's name is " + this.node.name);
-        this.socket.on('sendmessage',function(msg){
-                console.log("in getMessage function msg is " + msg);
-                var stringjson =JSON.stringify(msg);
-                var jsonObject = JSON.parse(stringjson);
-                cc.log("stringjson is " + stringjson);
-                //如果是send节点就显示不是node节点就不显示
-                //如果不是自己的名字的时候就显示相关信息
-                if((jsonObject.username != UserInfo.username)){
-                    // self.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.LEFT;
-                    if(self.showBoxLabel != null){
-                        //把对手的信息显示出来
-                        self.showBoxLabel.string += jsonObject.username + ":" + jsonObject.text + "\n\n";
-                    }
-                }
-            
-        });
+        
         //监听准备事件
-        this.socket.on('ready',function(msg){
+        UserInfo.roomSocket.on('ready',function(msg){
             //如果当前节点是ready节点的话进行准备，不是ready节点上一边去
             if(self.node.name === 'ready'){
                 cc.log("msg is " + msg);
@@ -97,6 +85,8 @@ cc.Class({
                 }
                 //如果对手已经准备好了一起进入游戏
                 if(self.otherIsReady && self.isReady){
+                    //退出聊天socket
+                    UserInfo.roomSocket.disconnect();
                     //如果另外一个对手也已经准备好了就一起进入场景
                     cc.director.loadScene("pvpGame");
                 }
@@ -104,7 +94,7 @@ cc.Class({
            
         });
         //监听用户离开房间事件
-        this.socket.on('leave',function(msg){
+        UserInfo.roomSocket.on('leave',function(msg){
             cc.log("msg is " + msg);
             if(msg.username != UserInfo.username){
                 if(self.showBoxLabel != null){
@@ -114,6 +104,22 @@ cc.Class({
                
             }           
         });
+        UserInfo.roomSocket.on('sendmessage',function(msg){
+            console.log("in getMessage function msg is " + msg);
+            var stringjson =JSON.stringify(msg);
+            var jsonObject = JSON.parse(stringjson);
+            cc.log("stringjson is " + stringjson);
+            //如果是send节点就显示不是node节点就不显示
+            //如果不是自己的名字的时候就显示相关信息
+            if((jsonObject.username != UserInfo.username)){
+                // self.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.LEFT;
+                if(self.showBoxLabel != null){
+                    //把对手的信息显示出来
+                    self.showBoxLabel.string += jsonObject.username + ":" + jsonObject.text + "\n\n";
+                }
+            }
+        
+    });
     },
     //拼接字符串方法
     concatString : function(stringArr){
@@ -129,13 +135,19 @@ cc.Class({
 
     },
     sendMessage : function(){
+        cc.log("this node is " + this.node.name);
        //获得输入信息
         this.info = this.infoLabel.getComponent(cc.EditBox).string;
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"message":' + '"' + this.info + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
-        cc.log(dataString);
+        var data = {
+                "username" : UserInfo.username,
+                "message"  : this.info,
+                "roomID"   : SwitchScene.roomID,
+        }
+        cc.log(data);
+        cc.log("In sendMessage function socket is " + UserInfo.roomSocket);
         //如果是node节点就发送信息
-            this.socket.emit('sendmessage',dataString);
-            // this.showBoxLabel.horizontalAlign = cc.Label.HorizontalAlign.RIGHT;
+            UserInfo.roomSocket.emit('sendmessage',dataString);
             //先把自己的信息显示
             this.showBoxLabel.string += UserInfo.username + ":" + this.info + "\n\n";
             cc.log("showbox is " + this.showBoxLabel);
@@ -149,7 +161,7 @@ cc.Class({
             cc.log(UserInfo.socket);
             var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
             cc.log("in ready function dataString is " + dataString);
-            cc.log("in readClicked socket is " + this.socket);
+            cc.log("in readClicked socket is " + UserInfo.roomSocket);
             if(this.node.name === 'ready'){
                  //将准备好的状态发送给服务器
                 UserInfo.socket.emit('ready',dataString);
@@ -157,14 +169,15 @@ cc.Class({
     },
     logOut : function(){
         var dataString = '{"username":' + '"' + UserInfo.username + '",' + '"roomID":' + '"' + SwitchScene.roomID + '"' + '}';
-        this.socket.emit('leave',dataString);
+        UserInfo.roomSocket.emit('leave',dataString);
+        
+        //退出房间之后将连接关闭
+        UserInfo.roomSocket.disconnect();
         //如果是自己登出房间的话切换场景
         cc.director.loadScene('inTheMatch');
         this.showBoxLabel.string = '';
-        this.socket.on('disconnect');
     },
     update (dt) {
-        
     },
     
 });
