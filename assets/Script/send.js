@@ -62,53 +62,61 @@ cc.Class({
         
         //监听准备事件
         this.socket.on('ready',function(msg){
-            //如果当前节点是ready节点的话进行准备，不是ready节点上一边去
-            if(self.node.name === 'ready'){
-                cc.log("msg is " + msg);
-                //将字符串转换为json对象
+            if(cc.sys.isNative){
                 var jsonMessage = JSON.parse(msg);
-                cc.log("jsonMessage is " + jsonMessage);
-                if(jsonMessage != null){
-                    //遍历房间的其他人
-                    cc.log("self.userFromRoom.length is " + self.userFromRoom.length);
-                    for(let i = 0;i < self.userFromRoom.length;i++){
-                        cc.log("in room's user is " + self.userFromRoom[i].username);
-                         if((jsonMessage.user === self.userFromRoom[i].username)){
-                             self.readyCount++;
-                         }
-                    }
-                    cc.log(self.readyCount);
-                    if(self.readyCount === self.userFromRoom.length){
-                       //说明其他人已经准备好了
-                       self.otherIsReady = true;
-                    }
+            }else{
+                jsonMessage = msg;
+            }
+            //如果当前节点是ready节点的话进行准备，不是ready节点上一边去
+            cc.log("msg is " + msg);
+            cc.log("jsonMessage is " + jsonMessage);
+            if(jsonMessage != null){
+                //遍历房间的其他人
+                cc.log("self.userFromRoom.length is " + self.userFromRoom.length);
+                for(let i = 0;i < self.userFromRoom.length;i++){
+                    cc.log("in room's user is " + self.userFromRoom[i].username);
+                        if((jsonMessage.user === self.userFromRoom[i].username)){
+                            self.readyCount++;
+                        }
                 }
-                //如果对手已经准备好了一起进入游戏
-                if(self.otherIsReady && self.isReady){
-                    
-                    //如果另外一个对手也已经准备好了就一起进入场景
-                    cc.director.loadScene("pvpGame");
+                cc.log(self.readyCount);
+                if(self.readyCount === self.userFromRoom.length){
+                    //说明其他人已经准备好了
+                    self.otherIsReady = true;
                 }
             }
-           
+            //如果对手已经准备好了一起进入游戏
+            if(self.otherIsReady && self.isReady){
+                
+                //如果另外一个对手也已经准备好了就一起进入场景
+                cc.director.loadScene("pvpGame");
+            }
         });
         //监听用户离开房间事件
         this.socket.on('leave',function(msg){
-            cc.log("msg is " + msg);
-            if(msg.username != UserInfo.username){
+            if(cc.sys.isNative){
+                var message = JSON.parse(msg); 
+            }else{
+                message = msg;
+            }
+            if(message.username != UserInfo.username){
                 if(self.showBoxLabel != null){
                     //如果不等于当前的用户的话进行提醒是否另一个人要退出房间
-                    self.showBoxLabel.string += msg.username + "离开了房间！！！" + '\n\n'; 
+                    self.showBoxLabel.string += message.username + "离开了房间！！！" + '\n\n'; 
                    
                 }
                
             }           
         });
         this.socket.on('sendresponse',function(msg){
+            if(cc.sys.isNative){
+                //获得jsonmessage
+                var jsonObject = JSON.parse(msg);
+            }else{
+                jsonObject = msg;
+            }
             console.log("in getMessage function msg is " + msg);
-            var stringjson =JSON.stringify(msg);
-            var jsonObject = JSON.parse(stringjson);
-            cc.log("stringjson is " + stringjson);
+            console.log("stringjson is " + jsonObject);
             //如果是send节点就显示不是node节点就不显示
             //如果不是自己的名字的时候就显示相关信息
             if((jsonObject.username != UserInfo.username)){

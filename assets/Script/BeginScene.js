@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-18 09:09:12
+ * @Last Modified time: 2018-04-18 14:15:14
  */
 const serverHost = require("Host");
 cc.Class({
@@ -107,10 +107,21 @@ cc.Class({
             this.scheduleOnce(function(){
                 //把相应的用户信息保存起来，初始化全局变量
                 // UserInfo.matchModeSocket = io('ws://192.168.1.153:3000');
-                UserInfo.socket  = io('ws://192.168.1.148:3000');
-                UserInfo.socket.on('conn',function(msg){
-                    cc.log("msg is " + JSON.stringify(msg));
-                })
+                if(cc.sys.isNative){
+                    cc.log("该平台是android平台");
+                    //调用java代码进行socket的连接
+                    UserInfo.socket = window.io.connect('http://192.168.1.148:3000'); 
+                    UserInfo.socket.on('conn',function(msg){
+                        cc.log("msg is " + JSON.stringify(msg));
+                    })
+                    
+                }else{
+                    UserInfo.socket  = io.connect('http://192.168.1.148:3000');
+                    UserInfo.socket.on('conn',function(msg){
+                        cc.log("msg is " + JSON.stringify(msg));
+                        console.log("msg is " + JSON.stringify(msg));
+                    });
+                }
                 //登录成功后2s自动进入游戏
                 cc.director.loadScene("ptype");
             },1);

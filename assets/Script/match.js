@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-11 09:20:11 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-17 18:09:51
+ * @Last Modified time: 2018-04-18 17:37:28
  */
 cc.Class({
     extends: cc.Component,
@@ -25,7 +25,6 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        cc.log("*(*(*(*(**************************((((()))))))))");
         var self = this;
         cc.log(this.rival.getComponent(cc.Label));
         //显示自己的信息
@@ -49,23 +48,38 @@ cc.Class({
         cc.log("self.matchLabel is " + self.matchLabel);
         //监听匹配事件
         this.socket.on('pvp',function(msg){
-            cc.log("adadfadfadfadfdddddd" + " " + this.node);
-            console.log("msg is " + msg);
-            //匹配成功
-            try{
-                var message = JSON.parse(msg);
-                self.matchLabel.getComponent(cc.Label).string = message.msg;
-                if(message.msg === '匹配成功'){
-                    SwitchScene.roomID = message.roomID;
+            if(cc.sys.isNative){
+                console.log("***************小米*****************");
+                console.log("在安卓平台msg is " + msg);
+                try{
+                    var message = JSON.parse(msg);
+                    if(message.msg === '匹配成功'){
+                        SwitchScene.roomID = message.roomID;
+                        SwitchScene.rivalInfo = [];
+                        SwitchScene.rivalInfo.push(message.user1);
+                        SwitchScene.rivalInfo.push(message.user2);
+                        cc.director.loadScene("matchedRoom");
+                    }
+                }catch(e){
+
+                }
+            }else{
+              
+                if(msg.msg === '匹配成功'){
+                    SwitchScene.roomID = msg.roomID;
                     SwitchScene.rivalInfo = [];
-                    SwitchScene.rivalInfo.push(message.user1);
-                    SwitchScene.rivalInfo.push(message.user2);
+                    SwitchScene.rivalInfo.push(msg.user1);
+                    SwitchScene.rivalInfo.push(msg.user2);
                     cc.director.loadScene("matchedRoom");
                 }
-            }catch(e){
-                cc.log("in pvp event self.matchLabel is " + self.matchLabel);
             }
-            
+            // cc.log("adadfadfadfadfdddddd" + " " + this.node);
+            // console.log("msg is " + msg);
+            // //匹配成功
+            // try{
+            // var message = JSON.parse(msg);
+            // cc.log("message is " + message);
+            // self.matchLabel.getComponent(cc.Label).string = message.msg;
             
         });
     },
