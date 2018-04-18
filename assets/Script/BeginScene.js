@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-17 14:57:41
+ * @Last Modified time: 2018-04-18 09:09:12
  */
 const serverHost = require("Host");
 cc.Class({
@@ -12,11 +12,11 @@ cc.Class({
          //用户名输入框的引用
          usernameInput : {
             default : null,
-            type    : cc.EditBox,
+            type    : cc.Node,
         },
         passwordInput : {
             default : null,
-            type    : cc.EditBox,
+            type    : cc.Node,
         },
         //提示消息框
         toastParent   : {
@@ -41,8 +41,10 @@ cc.Class({
         cc.log("this.operation is " + this.operation);
         this.ServerLink += operation;
         var self =this;
-        // self.username = self.usernameInput.string;
-        // self.password = self.passwordInput.string;
+        this.username = this.usernameInput.getComponent(cc.EditBox).string;
+        this.password = this.passwordInput.getComponent(cc.EditBox).string;
+        cc.log("username is " + this.username);
+        cc.log("password is " + this.password);
         //如果点击登录按钮的话进行登录
             var xhr = new XMLHttpRequest();
             //将label给准备好
@@ -105,7 +107,7 @@ cc.Class({
             this.scheduleOnce(function(){
                 //把相应的用户信息保存起来，初始化全局变量
                 // UserInfo.matchModeSocket = io('ws://192.168.1.153:3000');
-                UserInfo.socket  = io('ws://192.168.1.153:3000');
+                UserInfo.socket  = io('ws://192.168.1.148:3000');
                 UserInfo.socket.on('conn',function(msg){
                     cc.log("msg is " + JSON.stringify(msg));
                 })
@@ -149,8 +151,7 @@ cc.Class({
         this.ServerLink = serverHost.host;
     },
     update(){
-        this.username = this.usernameInput.string;
-        this.password = this.passwordInput.string;
+        
     },
     onDestroy(){
         this.unscheduleAllCallbacks();

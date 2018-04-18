@@ -629,8 +629,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 160,
-      "height": 40
+      "width": 300,
+      "height": 50
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -871,8 +871,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 160,
-      "height": 40
+      "width": 300,
+      "height": 50
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -1083,10 +1083,10 @@
     },
     "_enabled": true,
     "usernameInput": {
-      "__id__": 16
+      "__id__": 15
     },
     "passwordInput": {
-      "__id__": 22
+      "__id__": 21
     },
     "toastParent": {
       "__id__": 23
