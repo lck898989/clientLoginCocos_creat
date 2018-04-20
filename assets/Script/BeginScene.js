@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-04-10 12:35:47 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-18 14:15:14
+ * @Last Modified time: 2018-04-20 16:59:08
  */
 const serverHost = require("Host");
 cc.Class({
@@ -74,14 +74,15 @@ cc.Class({
                         //存储用户信息
                         self.overAndStoreUser(label,response);
                     }
-                }else{
-                    label.string = "网络已经断开";
                 }
             };    
             cc.log("username is " + self.username);
             cc.log("password is " + self.password);
             cc.log("serverLink is " + this.ServerLink);
             xhr.open("POST", this.ServerLink);
+            xhr.ontimeout = function(e){
+                console.error("Timeout!!");
+            }
             // xhr.setRequestHeader("Access-Control-Allow-Origin","*");
             // JSON.stringify()
             // + '?username=' + self.username + '&password=' + self.password
@@ -110,13 +111,13 @@ cc.Class({
                 if(cc.sys.isNative){
                     cc.log("该平台是android平台");
                     //调用java代码进行socket的连接
-                    UserInfo.socket = window.io.connect('http://192.168.1.148:3000'); 
+                    UserInfo.socket = window.io.connect(serverHost.host,{'force new connection': true});
                     UserInfo.socket.on('conn',function(msg){
                         cc.log("msg is " + JSON.stringify(msg));
                     })
                     
                 }else{
-                    UserInfo.socket  = io.connect('http://192.168.1.148:3000');
+                    UserInfo.socket  = io.connect(serverHost.host,{'force new connection' : true});
                     UserInfo.socket.on('conn',function(msg){
                         cc.log("msg is " + JSON.stringify(msg));
                         console.log("msg is " + JSON.stringify(msg));
@@ -124,6 +125,15 @@ cc.Class({
                 }
                 //登录成功后2s自动进入游戏
                 cc.director.loadScene("ptype");
+                UserInfo.socket.on('disconnect',function(msg){
+                    cc.log("in d" + msg);
+                });
+                //关闭重新连接监听
+                UserInfo.socket.on('reconnect',function(msg){
+                    UserInfo.listenCount++;
+                    cc.log("listenCount is " + UserInfo.listenCount);
+                    cc.log("in BeginScene msg is " + msg);
+                });
             },1);
             // this.unscheduleAllCallbacks();
             UserInfo.username = self.username;
