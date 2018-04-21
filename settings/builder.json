@@ -3,6 +3,7 @@
   "appSecret": "",
   "encryptJs": true,
   "excludeScenes": [],
+  "fb-instant-games": {},
   "includeAnySDK": false,
   "includeSDKBox": false,
   "inlineSpriteFrames": true,
@@ -20,9 +21,12 @@
   },
   "packageName": "org.cocos2d.helloworld",
   "privateKey": "",
+  "qqplay": {
+    "orientation": "portrait"
+  },
   "renderMode": "0",
   "startScene": "9de57286-db3b-46b7-be68-15c0450d5ffd",
-  "title": "hello_world",
+  "title": "batleGame",
   "webOrientation": "auto",
   "wechatgame": {
     "appid": "",
